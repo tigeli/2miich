@@ -15,7 +15,8 @@ TARGET = 2miich
 CONFIG += sailfishapp
 
 SOURCES += src/2miich.cpp \
-    src/diskcache.cpp
+    src/diskcache.cpp \
+    src/oledify.cpp
 
 OTHER_FILES += \
     rpm/2miich.changes.in \
@@ -46,5 +47,6 @@ RESOURCES += \
     2miich.qrc
 
 HEADERS += \
-    src/diskcache.h
+    src/diskcache.h \
+    src/oledify.h
 

@@ -18,10 +18,12 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Oledify 1.0
 import '../models'
 import '../effects'
 import '../widgets'
 
+import org.nemomobile.dbus 1.0
 
 Page {
     id: page
@@ -35,6 +37,19 @@ Page {
         SchedulePage {}
     }
 
+    DBusInterface {
+        id: tohOled
+
+        destination: 'com.kimmoli.toholed'
+        interface: 'com.kimmoli.toholed'
+        path: '/'
+        busType: DBusInterface.SystemBusj
+    }
+
+    Oledify {
+        id: oledify
+    }
+
     SilicaListView {
         id: games
         anchors.fill: parent
@@ -46,6 +61,8 @@ Page {
                     var running = false;
                     var goals = false;
                     if (games.date.toDateString() === new Date().toDateString()) {
+                        oledify.clear();
+
                         for (var i = 0; i < count; i++) {
                             var r = get(i);
                             if (games.cache[r.home] !== undefined && r.homescore > games.cache[r.home])
@@ -65,6 +82,9 @@ Page {
                                 pageStack.nextPage(page).details = r;
                                 pageStack.nextPage(page).refresh();
                             }
+
+                            oledify.drawText(0, i * 16, r.home + ' ' + r.homescore + '-' + r.awayscore + ' ' + r.away);
+                            tohOled.call('drawPicture', 0, 0, oledify.data);
                         }
                     }
                     games.gamesPending = pending;

@@ -19,10 +19,12 @@
 #include <sailfishapp.h>
 
 #include "diskcache.h"
+#include "oledify.h"
 
 int main(int argc, char *argv[])
 {
     qmlRegisterType<DiskCache, 1>("DiskCache", 1, 0, "DiskCache");
+    qmlRegisterType<Oledify, 1>("Oledify", 1, 0, "Oledify");
     return SailfishApp::main(argc, argv);
 }
 
