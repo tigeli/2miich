@@ -41,7 +41,7 @@ Page {
         id: tohOled
 
         destination: 'com.kimmoli.toholed'
-        interface: 'com.kimmoli.toholed'
+        iface: 'com.kimmoli.toholed'
         path: '/'
         busType: DBusInterface.SystemBusj
     }
@@ -84,8 +84,8 @@ Page {
                             }
 
                             oledify.drawText(0, i * 16, r.home + ' ' + r.homescore + '-' + r.awayscore + ' ' + r.away);
-                            tohOled.call('drawPicture', 0, 0, oledify.data);
                         }
+			tohOled.call('drawPicture', 0, 0, oledify.data);
                     }
                     games.gamesPending = pending;
                     games.gamesRunning = running;
