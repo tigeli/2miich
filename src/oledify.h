@@ -44,7 +44,7 @@ public:
     Q_INVOKABLE void setHeight(int height);
 
     Q_INVOKABLE void drawPixmap(int x, int y, QString pixmap);
-    Q_INVOKABLE void drawText(int x, int y, bool white, QString text);
+    Q_INVOKABLE void drawText(int x, int y, bool white, bool left, QString text);
 
 signals:
     void dataChanged();

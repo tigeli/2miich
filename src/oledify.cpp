@@ -78,7 +78,7 @@ void Oledify::drawPixmap(int x, int y, QString pixmap)
     p.end();
 }
 
-void Oledify::drawText(int x, int y, bool white, QString text)
+void Oledify::drawText(int x, int y, bool white, bool left, QString text)
 {
     QPainter p;
     QFont font("Sans");
@@ -94,7 +94,10 @@ void Oledify::drawText(int x, int y, bool white, QString text)
     else
         p.setPen(QColor("black"));
 
-    p.drawText(x, y, width() - x, height() - y, Qt::AlignLeft | Qt::AlignTop, text);
+    if (left)
+        p.drawText(x, y, width() - x, height() - y, Qt::AlignLeft | Qt::AlignTop, text);
+    else
+        p.drawText(0, y, x, height() - y, Qt::AlignRight | Qt::AlignTop, text);
 
     p.end();
 }
