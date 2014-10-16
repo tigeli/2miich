@@ -78,12 +78,12 @@ void Oledify::drawPixmap(int x, int y, QString pixmap)
     p.end();
 }
 
-void Oledify::drawText(int x, int y, bool white, bool left, QString text)
+void Oledify::drawText(int x, int y, bool white, int align, QString text)
 {
     QPainter p;
-    QFont font("Sans");
+    QFont font("Sail Sans Pro");
 
-    font.setPixelSize(16);
+    font.setPixelSize(14);
 
     p.begin(buffer);
 
@@ -94,10 +94,12 @@ void Oledify::drawText(int x, int y, bool white, bool left, QString text)
     else
         p.setPen(QColor("black"));
 
-    if (left)
+    if (align < 0)
         p.drawText(x, y, width() - x, height() - y, Qt::AlignLeft | Qt::AlignTop, text);
-    else
+    else if (align > 0)
         p.drawText(0, y, x, height() - y, Qt::AlignRight | Qt::AlignTop, text);
+    else
+        p.drawText(x - width() / 2, y, width(), height() - y, Qt::AlignHCenter | Qt::AlignTop, text);
 
     p.end();
 }

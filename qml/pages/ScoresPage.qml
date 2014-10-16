@@ -18,18 +18,16 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import Oledify 1.0
 import '../models'
 import '../effects'
 import '../widgets'
+import '../helpers'
 
-import org.nemomobile.dbus 1.0
 
 Page {
     id: page
     property int detailsIndex: -1
     property alias date: games.date
-    property bool tohOledLocked: false
 
     onStatusChanged: if (status === PageStatus.Active) { detailsIndex = -1; pageStack.pushExtra(schedule, { mainPage: page }); }
 
@@ -39,20 +37,10 @@ Page {
     }
 
     Component.onDestruction: {
-        if (tohOledLocked)
-            tohOled.call("draw", ["lock", false]);
+        oledify.enable = false;
     }
 
-    DBusInterface {
-        id: tohOled
-
-        destination: 'com.kimmoli.toholed'
-        iface: 'com.kimmoli.toholed'
-        path: '/'
-        busType: DBusInterface.SystemBus
-    }
-
-    Oledify {
+    Toholed {
         id: oledify
     }
 
@@ -106,17 +94,16 @@ Page {
                                 pageStack.nextPage(page).refresh();
                             }
 
-                            oledify.drawPixmap((i & 1) * 64, (i >> 1) * 16, 'qrc:///images/' + teamImages[r.home] + '-1bit.png');
-                            oledify.drawText((i & 1) * 64 + 17, (i >> 1) * 16, true, true, r.homescore);
-                            oledify.drawText((i & 1) * 64 + 47, (i >> 1) * 16, true, false, r.awayscore);
-                            oledify.drawPixmap((i & 1) * 64 + 48, (i >> 1) * 16, 'qrc:///images/' + teamImages[r.away] + '-1bit.png');
+                            oledify.drawPixmap((i & 1) * 66, (i >> 1) * 16, ':/images/' + teamImages[r.home] + '-1bit.png');
+                            oledify.drawText((i & 1) * 66 + 17, (i >> 1) * 16, true, -1, r.homescore);
+                            oledify.drawText((i & 1) * 66 + 30, (i >> 1) * 16, true, 0, '-');
+                            oledify.drawText((i & 1) * 66 + 45, (i >> 1) * 16, true, 1, r.awayscore);
+                            oledify.drawPixmap((i & 1) * 66 + 46, (i >> 1) * 16, ':/images/' + teamImages[r.away] + '-1bit.png');
                         }
-                        if (!tohOledLocked)
-                            tohOled.call('draw', ['lock', true]);
-                        tohOledLocked = true;
-                        tohOled.call('drawPicture', 0, 0, oledify.data);
-                    } else if (tohOledLocked) {
-                        tohOled.call('draw', ['lock', false]);
+                        oledify.enable = true;
+                        oledify.update();
+                    } else {
+                        oledify.enable = false;
                     }
 
                     games.gamesPending = pending;

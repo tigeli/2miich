@@ -36,7 +36,8 @@ OTHER_FILES += \
     qml/models/LiigaModel.qml \
     qml/widgets/Logo.qml \
     qml/models/ScheduleModel.qml \
-    qml/effects/MonochromeEffect.qml
+    qml/effects/MonochromeEffect.qml \
+    qml/helpers/Toholed.qml
 
 # to disable building translations every time, comment out the
 # following CONFIG line

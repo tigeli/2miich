@@ -69,27 +69,27 @@
 <context>
     <name>ScoresPage</name>
     <message>
-        <location filename="../qml/pages/ScoresPage.qml" line="149"/>
+        <location filename="../qml/pages/ScoresPage.qml" line="137"/>
         <source>No games for the day</source>
         <translation>Ei otteluita päivälle</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ScoresPage.qml" line="154"/>
+        <location filename="../qml/pages/ScoresPage.qml" line="142"/>
         <source>Statistics</source>
         <translation>Tilastot</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ScoresPage.qml" line="159"/>
+        <location filename="../qml/pages/ScoresPage.qml" line="147"/>
         <source>Go to today</source>
         <translation>Näytä tämä päivä</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ScoresPage.qml" line="163"/>
+        <location filename="../qml/pages/ScoresPage.qml" line="151"/>
         <source>Previous: </source>
         <translation>Edeltävät: </translation>
     </message>
     <message>
-        <location filename="../qml/pages/ScoresPage.qml" line="170"/>
+        <location filename="../qml/pages/ScoresPage.qml" line="158"/>
         <source>Next: </source>
         <translation>Seuraavat: </translation>
     </message>
