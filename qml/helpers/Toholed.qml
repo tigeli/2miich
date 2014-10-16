@@ -23,22 +23,67 @@ import org.nemomobile.dbus 1.0
 
 Oledify {
     id: oledify
+    property bool present: false;
     property bool enable: false;
+    property bool _active: present && enable;
     property bool haveLock: false
-    property variant dbusResource: DBusInterface {
-        id: tohOled
+    property list<QtObject> resources: [
+        DBusInterface {
+            id: tohOled
 
-        destination: 'com.kimmoli.toholed'
-        iface: 'com.kimmoli.toholed'
-        path: '/'
-        busType: DBusInterface.SystemBus
-    }
+            destination: 'com.kimmoli.toholed'
+            iface: 'com.kimmoli.toholed'
+            path: '/'
+            busType: DBusInterface.SystemBus
+        },
+        DBusInterface {
+            id: dbusNames
 
-    property variant timer: Timer {
-        interval: 25000
-        running: enable
+            destination: 'org.freedesktop.DBus'
+            iface: 'org.freedesktop.DBus'
+            path: '/org/freedesktop/DBus'
+            signalsEnabled: true
 
-        onTriggered: {
+            busType: DBusInterface.SystemBus
+
+            signal rcNameOwnerChanged(string name, string prevOwner, string newOwner);
+
+            onRcNameOwnerChanged: {
+                if (name === tohOled.destination)
+                    oledify.present = !!newOwner
+            }
+
+            Component.onCompleted: {
+                dbusNames.typedCallWithReturn('GetNameOwner',
+                                              [{type: 's', value: tohOled.destination}],
+                                              function (owner) {
+                                                  oledify.present = !!owner;
+                                              });
+            }
+        },
+        Timer {
+            interval: 25000
+            running: _active
+
+            onTriggered: {
+                tohOled.typedCallWithReturn("draw", [
+                                                {type: 's', value: 'lock'},
+                                                {type: 'b', value: enable},
+                                                {type: 's', value: 'fi.inz.2miich'}
+                                            ],
+                                            function (reply) {
+                                                var hadLock = haveLock;
+                                                haveLock = reply === 'ok';
+                                                if (haveLock && !hadLock)
+                                                    oledify.update();
+                                            });
+
+            }
+        }
+    ]
+
+    on_ActiveChanged: {
+        if (present) {
             tohOled.typedCallWithReturn("draw", [
                                             {type: 's', value: 'lock'},
                                             {type: 'b', value: enable},
@@ -50,22 +95,12 @@ Oledify {
                                             if (haveLock && !hadLock)
                                                 oledify.update();
                                         });
-
         }
     }
 
-    onEnableChanged: {
-        tohOled.typedCallWithReturn("draw", [
-                                        {type: 's', value: 'lock'},
-                                        {type: 'b', value: enable},
-                                        {type: 's', value: 'fi.inz.2miich'}
-                                    ],
-                                    function (reply) {
-                                        var hadLock = haveLock;
-                                        haveLock = reply === 'ok';
-                                        if (haveLock && !hadLock)
-                                            oledify.update();
-                                    });
+    onPresentChanged: {
+        if (!present)
+            haveLock = false;
     }
 
     function update() {
