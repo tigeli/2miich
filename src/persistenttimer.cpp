@@ -25,6 +25,8 @@
 
 PersistentTimer::PersistentTimer(QObject *parent) :
     QObject(parent),
+    m_notifier(NULL),
+    m_fallback(NULL),
     m_interval(1000),
     m_repeat(false),
     m_running(false),
