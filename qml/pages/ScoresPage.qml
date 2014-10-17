@@ -101,6 +101,10 @@ Page {
                             oledify.drawText((i & 1) * 66 + 45, (i >> 1) * 16, true, 1, r.awayscore);
                             oledify.drawPixmap((i & 1) * 66 + 46, (i >> 1) * 16, ':/images/' + teamImages[r.away] + '-1bit.png');
                         }
+
+                        if (count < 7)
+                            oledify.drawText(64, 48, true, 0, new Date().toLocaleTimeString(Qt.locale(), "hh:mm"));
+
                         oledify.enable = true;
                         oledify.update();
                     } else {
