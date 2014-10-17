@@ -65,6 +65,7 @@ Oledify {
         PersistentTimer {
             interval: 25000
             running: _active
+            repeat: true
             wakeUp: true
 
             onTriggered: {

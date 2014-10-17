@@ -30,7 +30,8 @@ PersistentTimer::PersistentTimer(QObject *parent) :
     m_running(false),
     m_triggeredOnStart(false),
     m_maxError(1000),
-    m_dontEmit(false)
+    m_dontEmit(false),
+    m_wakeUp(false)
 {
     int fd = -1;
     m_iphb = iphb_open(NULL);
