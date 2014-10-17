@@ -104,6 +104,8 @@ Page {
 
                         if (count < 7)
                             oledify.drawText(64, 48, true, 0, new Date().toLocaleTimeString(Qt.locale(), "hh:mm"));
+                        else if (count < 8)
+                            oledify.drawText(96, 48, true, 0, new Date().toLocaleTimeString(Qt.locale(), "hh:mm"));
 
                         oledify.enable = true;
                         oledify.update();
