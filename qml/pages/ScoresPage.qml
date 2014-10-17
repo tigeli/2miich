@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import PersistentTimer 1.0
 import '../models'
 import '../effects'
 import '../widgets'
@@ -117,10 +118,12 @@ Page {
         property bool gamesRunning: false
         property bool gamesPending: false
 
-        Timer {
+        PersistentTimer {
              interval: games.gamesRunning ? 30000 : 600000
+             maxError: 10000
              running: games.gamesRunning || games.gamesPending
              repeat: true
+             wakeUp: oledify.haveLock
 
              onTriggered: {
                  games.refresh();

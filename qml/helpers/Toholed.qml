@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import Oledify 1.0
+import PersistentTimer 1.0
 
 import org.nemomobile.dbus 1.0
 
@@ -61,9 +62,10 @@ Oledify {
                                               });
             }
         },
-        Timer {
+        PersistentTimer {
             interval: 25000
             running: _active
+            wakeUp: true
 
             onTriggered: {
                 tohOled.typedCallWithReturn("draw", [

@@ -13,10 +13,13 @@
 TARGET = 2miich
 
 CONFIG += sailfishapp
+QT += network
+PKGCONFIG += libiphb
 
 SOURCES += src/2miich.cpp \
     src/diskcache.cpp \
-    src/oledify.cpp
+    src/oledify.cpp \
+    src/persistenttimer.cpp
 
 OTHER_FILES += \
     rpm/2miich.changes.in \
@@ -49,5 +52,6 @@ RESOURCES += \
 
 HEADERS += \
     src/diskcache.h \
-    src/oledify.h
+    src/oledify.h \
+    src/persistenttimer.h
 
