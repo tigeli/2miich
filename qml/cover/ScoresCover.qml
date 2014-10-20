@@ -19,9 +19,24 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import '..'
+import '../widgets'
+import '../effects'
 
 CoverBackground {
     property alias model: view.model;
+
+    Image {
+        id: coverLogo
+        source: '/usr/share/icons/hicolor/86x86/apps/harbour-toomiich.png'
+        anchors.fill: parent
+        fillMode: Image.PreserveAspectCrop
+    }
+    MonochromeEffect {
+        sourceItem: coverLogo
+        opacity: 0.2
+        scale: 1.5
+        transformOrigin: Item.Center
+    }
 
     ListView {
         id: view;

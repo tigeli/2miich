@@ -18,9 +18,11 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import harbour.toomiich.PersistentTimer 1.0
 import '../models'
 import '../effects'
 import '../widgets'
+import '../helpers'
 
 
 Page {
@@ -35,6 +37,14 @@ Page {
         SchedulePage {}
     }
 
+    Component.onDestruction: {
+        oledify.enable = false;
+    }
+
+    Toholed {
+        id: oledify
+    }
+
     SilicaListView {
         id: games
         anchors.fill: parent
@@ -42,10 +52,29 @@ Page {
             onStatusChanged: {
                 games.isError = status === 4
                 if (status === 3) {
+                    var teamImages = {
+                        'Blues': 'Blues',
+                        'HIFK': 'HIFK',
+                        'HPK': 'HPK',
+                        'Ilves': 'Ilves',
+                        'JYP': 'JYP',
+                        'KalPa': 'KalPa',
+                        'Kärpät': 'Karpat',
+                        'Lukko': 'Lukko',
+                        'Pelicans': 'Pelicans',
+                        'SaiPa': 'SaiPa',
+                        'Tappara': 'Tappara',
+                        'TPS': 'TPS',
+                        'Sport': 'Sport',
+                        'Ässät': 'Assat'
+                    };
+
                     var pending = false;
                     var running = false;
                     var goals = false;
                     if (games.date.toDateString() === new Date().toDateString()) {
+                        oledify.clear();
+
                         for (var i = 0; i < count; i++) {
                             var r = get(i);
                             if (games.cache[r.home] !== undefined && r.homescore > games.cache[r.home])
@@ -65,8 +94,32 @@ Page {
                                 pageStack.nextPage(page).details = r;
                                 pageStack.nextPage(page).refresh();
                             }
+
+                            oledify.drawPixmap((i & 1) * 66, (i >> 1) * 16, ':/images/' + teamImages[r.home] + '-1bit.png');
+                            oledify.drawText((i & 1) * 66 + 17, (i >> 1) * 16, true, -1, r.homescore);
+                            oledify.drawText((i & 1) * 66 + 30, (i >> 1) * 16, true, 0, '-');
+                            oledify.drawText((i & 1) * 66 + 45, (i >> 1) * 16, true, 1, r.awayscore);
+                            oledify.drawPixmap((i & 1) * 66 + 46, (i >> 1) * 16, ':/images/' + teamImages[r.away] + '-1bit.png');
                         }
+
+                        if (count < 7) {
+                            oledify.clockW = 128;
+                            oledify.clockX = 0;
+                            oledify.clockEnabled = true;
+                        } else if (count < 8) {
+                            oledify.clockW = 64;
+                            oledify.clockX = 64;
+                            oledify.clockEnabled = true;
+                        } else {
+                            oledify.clockEnabled = false;
+                        }
+
+                        oledify.enable = true;
+                        oledify.update();
+                    } else {
+                        oledify.enable = false;
                     }
+
                     games.gamesPending = pending;
                     games.gamesRunning = running;
                 }
@@ -78,10 +131,12 @@ Page {
         property bool gamesRunning: false
         property bool gamesPending: false
 
-        Timer {
+        PersistentTimer {
              interval: games.gamesRunning ? 30000 : 600000
+             maxError: 10000
              running: games.gamesRunning || games.gamesPending
              repeat: true
+             wakeUp: oledify.haveLock
 
              onTriggered: {
                  games.refresh();
@@ -89,7 +144,7 @@ Page {
         }
 
         header: PageHeader {
-            title: Qt.formatDate(games.model.date, 'ddd, ') + Qt.formatDate(games.model.date)
+            title: { var d = games.model.date || games.date; return Qt.formatDate(d, 'ddd, ') + Qt.formatDate(d) }
         }
 
         ViewPlaceholder {
@@ -98,6 +153,7 @@ Page {
         }
 
         PullDownMenu {
+            id: pullDown
             MenuItem {
                 text: qsTr('Statistics')
                 onClicked: pageStack.push('StatisticsPage.qml', { mainPage: page })
@@ -105,24 +161,25 @@ Page {
 
             MenuItem {
                 text: qsTr('Go to today')
-                onClicked: games.date = new Date()
+                onClicked: { pullDown.close(true); games.date = new Date() }
             }
             MenuItem {
-                text: qsTr('Previous: ') + Qt.formatDate(games.model.prev, 'ddd, ') + Qt.formatDate(games.model.prev)
-                onClicked: games.date = games.model.prev
+                text: { var d = games.model.prev || new Date(games.date.getFullYear(), games.date.getMonth(), games.date.getDate() - 1); return qsTr('Previous: ') + Qt.formatDate(d, 'ddd, ') + Qt.formatDate(d) }
+                onClicked: { pullDown.close(true); games.date = (games.model.prev || new Date(games.date.getFullYear(), games.date.getMonth(), games.date.getDate() - 1)) }
             }
         }
 
         PushUpMenu {
+            id: pushUp
             MenuItem {
-                text: qsTr('Next: ') + Qt.formatDate(games.model.next, 'ddd, ') + Qt.formatDate(games.model.next)
-                onClicked: games.date = games.model.next
+                text: { var d = games.model.next || new Date(games.date.getFullYear(), games.date.getMonth(), games.date.getDate() + 1); return qsTr('Next: ') + Qt.formatDate(d, 'ddd, ') + Qt.formatDate(d) }
+                onClicked: { pushUp.close(true); games.date = (games.model.next || new Date(games.date.getFullYear(), games.date.getMonth(), games.date.getDate() + 1)) }
             }
         }
 
         onDateChanged: {
             cache = {};
-            model.clear();
+            games.model.clear();
             refresh();
         }
 
@@ -147,8 +204,9 @@ Page {
         function refresh() {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function (e) {
-                if (xhr.readyState == 4)
+                if (xhr.readyState == 4) {
                     games.model.json = xhr.responseText;
+                }
             }
             xhr.open('GET', 'http://liiga.fi/media/game-tracking/' + date.getFullYear().toString() + '-' + ('0' + (date.getMonth() + 1).toString()).substr(-2) + '-' +  ('0' + date.getDate().toString()).substr(-2) + '.json');
             xhr.send();
